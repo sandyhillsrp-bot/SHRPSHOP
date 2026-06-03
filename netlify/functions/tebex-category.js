@@ -1,28 +1,36 @@
 export const handler = async () => {
   try {
-    const STORE_TOKEN = process.env.TEBEX_STORE_TOKEN;
+    const TOKEN = process.env.TEBEX_HEADLESS_TOKEN;
 
     const res = await fetch(
-      `https://headless.tebex.io/api/accounts/${STORE_TOKEN}/categories?includePackages=1`
+      `https://headless.tebex.io/api/accounts/${TOKEN}/categories?includePackages=1`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
 
     const json = await res.json();
 
+    // ✅ THIS is the important part
     const categories = json?.data || [];
 
     // find Ranks category
-    const ranksCategory = categories.find((c) =>
+    const ranks = categories.find((c) =>
       c.name?.toLowerCase().includes("rank")
     );
 
     return {
       statusCode: 200,
-      body: JSON.stringify(ranksCategory?.packages || []),
+      body: JSON.stringify(ranks?.packages || []),
     };
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
+      body: JSON.stringify({
+        error: err.message,
+      }),
     };
   }
 };
