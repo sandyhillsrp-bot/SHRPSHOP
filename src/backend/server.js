@@ -12,7 +12,7 @@ app.use(express.json());
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // 🌍 YOUR LIVE FRONTEND DOMAIN (CHANGE THIS)
-const FRONTEND_URL = "https://shrpshop.netlify.app";
+const FRONTEND_URL = "https://startling-gecko-8c0bd3.netlify.app";
 
 // 🛒 CREATE CHECKOUT SESSION
 app.post("/create-checkout", async (req, res) => {
