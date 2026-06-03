@@ -17,18 +17,18 @@ exports.handler = async (event) => {
         },
         quantity: item.quantity,
       })),
-      success_url: "https://your-site.netlify.app/success",
-      cancel_url: "https://your-site.netlify.app/cancel",
+      success_url: "https://startling-gecko-8c0bd3.netlify.app/success",
+      cancel_url: "https://startling-gecko-8c0bd3.netlify.app/cancel",
     });
 
     return {
       statusCode: 200,
       body: JSON.stringify({ url: session.url }),
     };
-  } catch (error) {
+  } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ error: err.message }),
     };
   }
 };
