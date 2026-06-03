@@ -2,7 +2,7 @@ export const handler = async () => {
   try {
     const API_KEY = process.env.TEBEX_SECRET_KEY;
 
-    const res = await fetch("https://plugin.tebex.io/packages", {
+    const res = await fetch("https://SHRP.tebex.io/category/ranks", {
       headers: {
         "X-Tebex-Secret": API_KEY,
       },
