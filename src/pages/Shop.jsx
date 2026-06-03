@@ -30,7 +30,7 @@ export default function Shop() {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
 
   const goCheckout = () => {
     navigate("/checkout", { state: { cart } });
@@ -62,7 +62,7 @@ export default function Shop() {
       </div>
 
       <div className="mt-10 border-t pt-6">
-        <h2 className="text-xl font-bold">Cart</h2>
+        <h2 className="text-xl font-bold mb-3">Cart</h2>
 
         {cart.map((item) => (
           <div key={item.id} className="flex justify-between py-2">

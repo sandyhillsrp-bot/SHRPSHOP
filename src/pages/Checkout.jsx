@@ -6,6 +6,7 @@ export default function Checkout() {
   const cart = state?.cart || [];
 
   const [method, setMethod] = useState("card");
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     email: "",
@@ -19,19 +20,15 @@ export default function Checkout() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const validate = () => {
-    if (!form.email || !form.name || !form.postcode) {
-      alert("Please fill in all required fields");
-      return false;
-    }
-    return true;
-  };
-
   const pay = async () => {
-    if (!validate()) return;
+    if (!form.email || !form.name || !form.postcode) {
+      alert("Fill all fields");
+      return;
+    }
 
-    // STRIPE (CARD + GOOGLE PAY uses Stripe)
-    if (method === "card" || method === "googlepay") {
+    setLoading(true);
+
+    try {
       const res = await fetch("/.netlify/functions/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -44,32 +41,26 @@ export default function Checkout() {
 
       const data = await res.json();
 
-      if (data.url) window.location.href = data.url;
-      else alert("Payment failed");
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Payment failed");
+      }
+    } catch (err) {
+      console.error(err);
     }
 
-    // PAYPAL
-    if (method === "paypal") {
-      window.location.href =
-        "https://www.paypal.com/signin"; // replace with real PayPal API later
-    }
-
-    // CASHAPP (manual / placeholder)
-    if (method === "cashapp") {
-      alert(
-        "CashApp payment selected. Please send payment manually and open a ticket."
-      );
-    }
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen text-white px-8 py-10">
-      <h1 className="text-3xl font-bold mb-6">Secure Checkout</h1>
+    <div className="min-h-screen px-8 py-10 text-white">
+      <h1 className="text-3xl font-bold mb-6">Checkout</h1>
 
-      {/* CART SUMMARY */}
+      {/* SUMMARY */}
       <div className="border p-4 rounded bg-black/30 mb-6">
         {cart.map((i) => (
-          <div key={i.id} className="flex justify-between py-1">
+          <div key={i.id} className="flex justify-between">
             <span>{i.name} x{i.quantity}</span>
             <span>£{i.price * i.quantity}</span>
           </div>
@@ -80,65 +71,59 @@ export default function Checkout() {
       {/* PAYMENT METHODS */}
       <div className="grid md:grid-cols-4 gap-3 mb-6">
         <button onClick={() => setMethod("card")} className="p-3 border rounded">
-          Debit / Card
-        </button>
-
-        <button onClick={() => setMethod("googlepay")} className="p-3 border rounded">
-          Google Pay
+          Visa / Debit
         </button>
 
         <button onClick={() => setMethod("paypal")} className="p-3 border rounded">
           PayPal
         </button>
 
+        <button onClick={() => setMethod("googlepay")} className="p-3 border rounded">
+          Google Pay
+        </button>
+
         <button onClick={() => setMethod("cashapp")} className="p-3 border rounded">
-          Cash App
+          CashApp
         </button>
       </div>
 
-      {/* FORM (changes depending on method like Tebex) */}
+      {/* FORM */}
       <div className="border p-5 rounded bg-black/30 space-y-4">
-
-        {/* EMAIL */}
         <input
           name="email"
           placeholder="Email Address"
-          value={form.email}
           onChange={handleChange}
           className="w-full p-3 bg-black border rounded"
         />
 
-        {/* FULL NAME */}
         <input
           name="name"
           placeholder="Full Name"
-          value={form.name}
           onChange={handleChange}
           className="w-full p-3 bg-black border rounded"
         />
 
-        {/* POSTCODE */}
         <input
           name="postcode"
-          placeholder="Zip / Postal Code (e.g. PO12 1AB)"
-          value={form.postcode}
+          placeholder="Zip / Postal Code (PO12 1AB)"
           onChange={handleChange}
           className="w-full p-3 bg-black border rounded"
         />
 
-        {/* METHOD INFO BOX */}
+        {/* METHOD INFO */}
         <div className="text-sm opacity-70">
-          {method === "card" && "Pay securely with debit/credit card via Stripe."}
-          {method === "googlepay" && "Fast checkout using Google Pay wallet."}
-          {method === "paypal" && "You will be redirected to PayPal login."}
-          {method === "cashapp" && "Manual CashApp payment required."}
+          {method === "card" && "Secure Stripe payment (Visa / Debit)."}
+          {method === "paypal" && "Redirect to PayPal login."}
+          {method === "googlepay" && "Fast wallet payment via Stripe."}
+          {method === "cashapp" && "Manual payment required."}
         </div>
 
         <button
           onClick={pay}
+          disabled={loading}
           className="w-full py-3 bg-green-500 text-black font-bold rounded"
         >
-          Complete Payment
+          {loading ? "Processing..." : "Complete Payment"}
         </button>
       </div>
     </div>
