@@ -4,7 +4,21 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const handler = async (event) => {
   try {
+    if (!event.body) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Missing request body" }),
+      };
+    }
+
     const { cart } = JSON.parse(event.body);
+
+    if (!cart || !Array.isArray(cart)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Invalid cart" }),
+      };
+    }
 
     const line_items = cart.map((item) => ({
       quantity: item.quantity,
@@ -13,7 +27,7 @@ export const handler = async (event) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: item.price * 100,
+        unit_amount: Math.round(item.price * 100),
       },
     }));
 
@@ -32,7 +46,10 @@ export const handler = async (event) => {
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
+      body: JSON.stringify({
+        error: err.message,
+        stack: err.stack,
+      }),
     };
   }
 };
