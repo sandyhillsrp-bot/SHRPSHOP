@@ -35,25 +35,29 @@ export default function Shop() {
     0
   );
 
-  const checkout = async () => {
-    try {
-      const res = await fetch("https://your-api-domain.com/create-checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ cart }),
-      });
+const checkout = async () => {
+  try {
+    console.log("Checkout clicked");
 
-      const data = await res.json();
+    const res = await fetch("/.netlify/functions/create-checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ cart }),
+    });
 
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      console.error("No URL returned:", data);
     }
-  };
+  } catch (err) {
+    console.error("Checkout error:", err);
+  }
+};
 
   return (
     <div className="min-h-screen px-8 py-10 text-white">
