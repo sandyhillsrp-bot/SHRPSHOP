@@ -10,8 +10,15 @@ export const handler = async () => {
 
     const data = await res.json();
 
-    const packages = Array.isArray(data) ? data : data?.data || data?.packages || [];
+    console.log("TEBEX RAW RESPONSE:", data);
 
+    // FIX: ensure array extraction
+    const packages =
+      data?.data ||
+      data?.packages ||
+      (Array.isArray(data) ? data : []);
+
+    // TEMP DEBUG: return everything first
     return {
       statusCode: 200,
       body: JSON.stringify(packages),
@@ -19,7 +26,9 @@ export const handler = async () => {
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
+      body: JSON.stringify({
+        error: err.message,
+      }),
     };
   }
 };
