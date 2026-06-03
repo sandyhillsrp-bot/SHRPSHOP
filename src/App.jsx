@@ -15,7 +15,6 @@ import Applications from "./pages/Applications";
 import ServerStatus from "./pages/ServerStatus";
 import About from "./pages/About";
 import Shop from "./pages/Shop";
-import Checkout from "./pages/Checkout";
 import PageNotFound from "./lib/PageNotFound";
 
 const stripePromise = loadStripe("YOUR_PUBLISHABLE_KEY");
@@ -32,7 +31,6 @@ const AuthenticatedApp = () => {
         <Route path="/applications" element={<Applications />} />
         <Route path="/status" element={<ServerStatus />} />
         <Route path="/shop" element={<Shop />} />
-        <Route path="/checkout" element={<Checkout />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
