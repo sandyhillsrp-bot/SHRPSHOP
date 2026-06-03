@@ -1,21 +1,24 @@
-// test
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClientInstance } from "./lib/query-client";
 
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClientInstance } from './lib/query-client'
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
-import AppLayout from './components/layout/AppLayout'
-import Home from './pages/Home'
-import Rules from './pages/Rules'
-import Tickets from './pages/Tickets'
-import Staff from './pages/Staff'
-import Applications from './pages/Applications'
-import ServerStatus from './pages/ServerStatus'
-import About from './pages/About'
-import Shop from './pages/Shop'
-import PageNotFound from './lib/PageNotFound'
+import AppLayout from "./components/layout/AppLayout";
+import Home from "./pages/Home";
+import Rules from "./pages/Rules";
+import Tickets from "./pages/Tickets";
+import Staff from "./pages/Staff";
+import Applications from "./pages/Applications";
+import ServerStatus from "./pages/ServerStatus";
+import About from "./pages/About";
+import Shop from "./pages/Shop";
 import Checkout from "./pages/Checkout";
+import PageNotFound from "./lib/PageNotFound";
+
+const stripePromise = loadStripe("YOUR_PUBLISHABLE_KEY");
 
 const AuthenticatedApp = () => {
   return (
@@ -34,15 +37,17 @@ const AuthenticatedApp = () => {
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
-  )
-}
+  );
+};
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClientInstance}>
-      <Router>
-        <AuthenticatedApp />
-      </Router>
+      <Elements stripe={stripePromise}>
+        <Router>
+          <AuthenticatedApp />
+        </Router>
+      </Elements>
     </QueryClientProvider>
-  )
+  );
 }
