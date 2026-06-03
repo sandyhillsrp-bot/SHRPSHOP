@@ -22,11 +22,20 @@ const applications = [
   },
   {
     icon: Gavel,
-    title: 'Law Enforcement Application',
+    title: 'LAPD Application',
     description: 'Apply to serve and protect as a member of the Sandy Hills PD or BCSO. Enforce the law and keep order in the county.',
     status: 'OPEN',
     statusColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-    link: 'https://discord.gg/hd6VJUBBb',
+    link: 'https://docs.google.com/forms/d/e/1FAIpQLSeNVc0Lz_ncuc1gLGutXj6U9IvmsClx42M3xMs6R08UR8kfSg/viewform?usp=publish-editor',
+    note: 'Submit in the applications channel.',
+  },
+  {
+    icon: Gavel,
+    title: 'LASD Application',
+    description: 'Apply to serve and protect as a member of the Sandy Hills PD or BCSO. Enforce the law and keep order in the county.',
+    status: 'OPEN',
+    statusColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    link: 'https://docs.google.com/forms/d/e/1FAIpQLSeNVc0Lz_ncuc1gLGutXj6U9IvmsClx42M3xMs6R08UR8kfSg/viewform?usp=publish-editor',
     note: 'Submit in the applications channel.',
   },
   {
