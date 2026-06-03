@@ -1,34 +1,28 @@
 export const handler = async () => {
   try {
-    const API_KEY = process.env.TEBEX_SECRET_KEY;
+    const STORE_TOKEN = process.env.TEBEX_STORE_TOKEN;
 
-    const res = await fetch("https://SHRP.tebex.io/category/ranks", {
-      headers: {
-        "X-Tebex-Secret": API_KEY,
-      },
-    });
+    const res = await fetch(
+      `https://headless.tebex.io/api/accounts/${STORE_TOKEN}/categories?includePackages=1`
+    );
 
-    const data = await res.json();
+    const json = await res.json();
 
-    console.log("TEBEX RAW RESPONSE:", data);
+    const categories = json?.data || [];
 
-    // FIX: ensure array extraction
-    const packages =
-      data?.data ||
-      data?.packages ||
-      (Array.isArray(data) ? data : []);
+    // find Ranks category
+    const ranksCategory = categories.find((c) =>
+      c.name?.toLowerCase().includes("rank")
+    );
 
-    // TEMP DEBUG: return everything first
     return {
       statusCode: 200,
-      body: JSON.stringify(packages),
+      body: JSON.stringify(ranksCategory?.packages || []),
     };
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        error: err.message,
-      }),
+      body: JSON.stringify({ error: err.message }),
     };
   }
 };
