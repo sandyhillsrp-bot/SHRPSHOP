@@ -11,11 +11,9 @@ export default function Shop() {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 🧾 customer details
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
 
-  // 💳 payment method selector
   const [method, setMethod] = useState("stripe");
 
   const addToCart = (item) => {
@@ -45,7 +43,7 @@ export default function Shop() {
 
   const checkout = async () => {
     if (!email || !name) {
-      alert("Enter name + email");
+      alert("Please enter name + email");
       return;
     }
 
@@ -75,6 +73,8 @@ export default function Shop() {
 
       const data = await res.json();
 
+      console.log("checkout response:", data);
+
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -89,38 +89,66 @@ export default function Shop() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-10 text-white bg-black">
+    <div className="min-h-screen bg-black text-white px-8 py-10">
 
-      <h1 className="text-3xl font-bold mb-6">
-        Server Shop
+      {/* HEADER */}
+      <h1 className="text-4xl font-bold mb-6">
+        Server Store
       </h1>
 
       {/* CUSTOMER INFO */}
-      <div className="mb-6 space-y-3">
+      <div className="bg-white/5 p-4 rounded mb-6 space-y-3">
+
         <input
-          placeholder="Name"
-          className="w-full p-2 text-black"
+          className="w-full p-2 text-black rounded"
+          placeholder="Your Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
         <input
-          placeholder="Email"
-          className="w-full p-2 text-black"
+          className="w-full p-2 text-black rounded"
+          placeholder="Email Address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        {/* PAYMENT METHOD */}
-        <select
-          value={method}
-          onChange={(e) => setMethod(e.target.value)}
-          className="w-full p-2 text-black"
-        >
-          <option value="stripe">Stripe (Card)</option>
-          <option value="paypal">PayPal</option>
-          <option value="cashapp">CashApp</option>
-        </select>
+        {/* TEbEX STYLE PAYMENT METHOD */}
+        <div className="flex gap-3 mt-2">
+          
+          <button
+            onClick={() => setMethod("stripe")}
+            className={`flex-1 p-2 rounded ${
+              method === "stripe"
+                ? "bg-green-500 text-black"
+                : "bg-white/10"
+            }`}
+          >
+            Card (Stripe)
+          </button>
+
+          <button
+            onClick={() => setMethod("paypal")}
+            className={`flex-1 p-2 rounded ${
+              method === "paypal"
+                ? "bg-blue-500 text-black"
+                : "bg-white/10"
+            }`}
+          >
+            PayPal
+          </button>
+
+          <button
+            onClick={() => setMethod("cashapp")}
+            className={`flex-1 p-2 rounded ${
+              method === "cashapp"
+                ? "bg-green-400 text-black"
+                : "bg-white/10"
+            }`}
+          >
+            CashApp
+          </button>
+        </div>
       </div>
 
       {/* ITEMS */}
@@ -128,29 +156,37 @@ export default function Shop() {
         {ITEMS.map((item) => (
           <motion.div
             key={item.id}
-            className="p-4 border border-white/10 rounded bg-white/5"
+            className="bg-white/5 p-4 rounded border border-white/10"
           >
             <h2 className="font-bold">{item.name}</h2>
-            <p className="opacity-60 text-sm">
+            <p className="text-sm opacity-60">
               {item.desc}
             </p>
-            <p className="text-green-400 font-bold">
+
+            <p className="text-green-400 font-bold mt-2">
               £{item.price}
             </p>
 
             <button
               onClick={() => addToCart(item)}
-              className="mt-2 bg-blue-500 px-3 py-1 rounded"
+              className="mt-3 bg-blue-500 px-3 py-1 rounded"
             >
-              Add
+              Add to Cart
             </button>
           </motion.div>
         ))}
       </div>
 
       {/* CART */}
-      <div className="mt-8 border-t border-white/10 pt-6">
-        <h2 className="text-xl font-bold">Cart</h2>
+      <div className="mt-10 border-t border-white/10 pt-6">
+
+        <h2 className="text-xl font-bold mb-3">
+          Cart
+        </h2>
+
+        {cart.length === 0 && (
+          <p className="opacity-60">Cart is empty</p>
+        )}
 
         {cart.map((item) => (
           <div
@@ -170,7 +206,7 @@ export default function Shop() {
           </div>
         ))}
 
-        <div className="mt-4 font-bold">
+        <div className="mt-4 font-bold text-lg">
           Total: £{total}
         </div>
 
