@@ -2,11 +2,12 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
   try {
-    const { cart } = JSON.parse(event.body);
+    const { cart, discordId } = JSON.parse(event.body);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
+
       line_items: cart.map((item) => ({
         price_data: {
           currency: "gbp",
@@ -17,8 +18,14 @@ exports.handler = async (event) => {
         },
         quantity: item.quantity,
       })),
-      success_url: "https://startling-gecko-8c0bd3.netlify.app/success",
-      cancel_url: "https://startling-gecko-8c0bd3.netlify.app/cancel",
+
+      success_url: "https://YOUR-SITE.netlify.app/success",
+      cancel_url: "https://YOUR-SITE.netlify.app/cancel",
+
+      metadata: {
+        discordId,
+        cart: JSON.stringify(cart),
+      },
     });
 
     return {
