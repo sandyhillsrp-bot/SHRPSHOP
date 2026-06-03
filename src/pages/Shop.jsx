@@ -37,8 +37,6 @@ export default function Shop() {
 
 const checkout = async () => {
   try {
-    console.log("Checkout clicked");
-
     const res = await fetch("/.netlify/functions/create-checkout", {
       method: "POST",
       headers: {
@@ -52,7 +50,7 @@ const checkout = async () => {
     if (data.url) {
       window.location.href = data.url;
     } else {
-      console.error("No URL returned:", data);
+      console.error("No URL returned", data);
     }
   } catch (err) {
     console.error("Checkout error:", err);
