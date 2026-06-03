@@ -15,6 +15,7 @@ import ServerStatus from './pages/ServerStatus'
 import About from './pages/About'
 import Shop from './pages/Shop'
 import PageNotFound from './lib/PageNotFound'
+import Checkout from "./pages/Checkout";
 
 const AuthenticatedApp = () => {
   return (
@@ -28,6 +29,7 @@ const AuthenticatedApp = () => {
         <Route path="/applications" element={<Applications />} />
         <Route path="/status" element={<ServerStatus />} />
         <Route path="/shop" element={<Shop />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
