@@ -10,7 +10,13 @@ const ITEMS = [
 export default function Shop() {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  // 🧾 customer details
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+
+  // 💳 payment method selector
+  const [method, setMethod] = useState("stripe");
 
   const addToCart = (item) => {
     setCart((prev) => {
@@ -38,10 +44,13 @@ export default function Shop() {
   );
 
   const checkout = async () => {
-    setError("");
+    if (!email || !name) {
+      alert("Enter name + email");
+      return;
+    }
 
     if (cart.length === 0) {
-      setError("Your cart is empty.");
+      alert("Cart is empty");
       return;
     }
 
@@ -55,83 +64,93 @@ export default function Shop() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ cart }),
+          body: JSON.stringify({
+            cart,
+            email,
+            name,
+            method,
+          }),
         }
       );
 
-      if (!res.ok) {
-        throw new Error(`Server error: ${res.status}`);
-      }
-
       const data = await res.json();
-
-      console.log("Checkout response:", data);
 
       if (data.url) {
         window.location.href = data.url;
       } else {
-        setError("No checkout URL returned.");
+        alert(data.error || "Checkout failed");
       }
     } catch (err) {
       console.error(err);
-      setError("Checkout failed. Check console.");
+      alert("Checkout error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen px-8 py-10 text-white bg-slate-950">
+    <div className="min-h-screen px-8 py-10 text-white bg-black">
+
       <h1 className="text-3xl font-bold mb-6">
         Server Shop
       </h1>
 
-      {/* ERROR */}
-      {error && (
-        <div className="mb-4 p-3 bg-red-500/20 border border-red-500 text-red-300 rounded">
-          {error}
-        </div>
-      )}
+      {/* CUSTOMER INFO */}
+      <div className="mb-6 space-y-3">
+        <input
+          placeholder="Name"
+          className="w-full p-2 text-black"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <input
+          placeholder="Email"
+          className="w-full p-2 text-black"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        {/* PAYMENT METHOD */}
+        <select
+          value={method}
+          onChange={(e) => setMethod(e.target.value)}
+          className="w-full p-2 text-black"
+        >
+          <option value="stripe">Stripe (Card)</option>
+          <option value="paypal">PayPal</option>
+          <option value="cashapp">CashApp</option>
+        </select>
+      </div>
 
       {/* ITEMS */}
       <div className="grid md:grid-cols-3 gap-6">
         {ITEMS.map((item) => (
           <motion.div
             key={item.id}
-            className="border border-white/10 p-4 rounded-xl bg-white/5"
-            whileHover={{ scale: 1.03 }}
+            className="p-4 border border-white/10 rounded bg-white/5"
           >
-            <h2 className="font-bold text-lg">
-              {item.name}
-            </h2>
-
-            <p className="text-sm opacity-70">
+            <h2 className="font-bold">{item.name}</h2>
+            <p className="opacity-60 text-sm">
               {item.desc}
             </p>
-
-            <p className="text-green-400 font-bold mt-2">
+            <p className="text-green-400 font-bold">
               £{item.price}
             </p>
 
             <button
               onClick={() => addToCart(item)}
-              className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+              className="mt-2 bg-blue-500 px-3 py-1 rounded"
             >
-              Add to Cart
+              Add
             </button>
           </motion.div>
         ))}
       </div>
 
       {/* CART */}
-      <div className="mt-10 border-t border-white/10 pt-6">
-        <h2 className="text-xl font-bold mb-3">
-          Cart
-        </h2>
-
-        {cart.length === 0 && (
-          <p className="opacity-60">Cart is empty</p>
-        )}
+      <div className="mt-8 border-t border-white/10 pt-6">
+        <h2 className="text-xl font-bold">Cart</h2>
 
         {cart.map((item) => (
           <div
@@ -144,28 +163,24 @@ export default function Shop() {
 
             <button
               onClick={() => removeItem(item.id)}
-              className="text-red-400 hover:text-red-300"
+              className="text-red-400"
             >
               Remove
             </button>
           </div>
         ))}
 
-        {cart.length > 0 && (
-          <>
-            <div className="mt-4 font-bold text-lg">
-              Total: £{total}
-            </div>
+        <div className="mt-4 font-bold">
+          Total: £{total}
+        </div>
 
-            <button
-              onClick={checkout}
-              disabled={loading}
-              className="mt-4 px-6 py-3 bg-green-500 hover:bg-green-600 text-black font-bold rounded disabled:opacity-50"
-            >
-              {loading ? "Processing..." : "Checkout"}
-            </button>
-          </>
-        )}
+        <button
+          onClick={checkout}
+          disabled={loading}
+          className="mt-4 px-6 py-3 bg-green-500 text-black font-bold rounded"
+        >
+          {loading ? "Processing..." : "Checkout"}
+        </button>
       </div>
     </div>
   );
