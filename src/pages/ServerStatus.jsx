@@ -33,7 +33,7 @@ export default function ServerStatus() {
 useEffect(() => {
   const fetchStatus = async () => {
     try {
-      const res = await fetch("http://localhost:3001/status");
+      const res = await fetch("https://startling-gecko-8c0bd3.netlify.app/status");
       const data = await res.json();
 
       setOnlinePlayers(data.online);
